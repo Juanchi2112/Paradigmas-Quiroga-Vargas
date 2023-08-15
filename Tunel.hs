@@ -6,6 +6,8 @@ data Tunel = Tun [Link] deriving (Eq, Show)
 newT :: [Link] -> Tunel
 newT linkList = Tun linkList
 
+checkT (Tun [linkList]) = 
+
 connectsT :: City -> City -> Tunel -> Bool -- inidca si este tunel conceta estas dos ciudades distintas
 connectsT city1 city2 (Tun linkList) = 
 

@@ -2,13 +2,14 @@ module Tunel ( Tunel, newT, connectsT, usesT, delayT )
    where
 
 import Link
+import City
 
 data Tunel = Tun [Link] deriving (Eq, Show)
 
 newT :: [Link] -> Tunel
 newT linkList = if  verificarConexion (tupleList linkList) == [Nothing, Nothing] then Tun [] else Tun linkList
 
-tupleList (Tun linkList) = [tupleLink x|x <- linkList]
+tupleList linkList = [tupleLink x|x <- linkList]
 
 verificarConexion :: [(String, String)] -> [Maybe String]
 verificarConexion listaTuplas = do
@@ -22,7 +23,7 @@ verificarConexion listaTuplas = do
         _ -> [Nothing, Nothing]
 
 connectsT :: City -> City -> Tunel -> Bool -- inidca si este tunel conceta estas dos ciudades distintas
-connectsT city1 city2 (Tun linkList) = verificarConexion linkList == [Just city1, Just city2] || verificarConexion linkList == [Just city2, Just city1]
+connectsT city1 city2 (Tun linkList) = verificarConexion (tupleList linkList) == [Just (nameC city1), Just (nameC city2)] || verificarConexion (tupleList linkList) == [Just (nameC city2), Just (nameC city1)]
 
 
 usesT :: Link -> Tunel -> Bool  -- indica si este tunel atraviesa ese link
@@ -31,4 +32,4 @@ usesT link (Tun linkList) = elem link linkList
 
 delayT :: Tunel -> Float -- la demora que sufre una conexion en este tunel
 delayT (Tun []) = 0
-delayT (Tun l:linkList) =  delayL l + delayT (Tun linkList)
+delayT (Tun (l:linkList)) =  delayL l + delayT (Tun linkList)

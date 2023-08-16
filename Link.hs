@@ -9,8 +9,8 @@ data Link = Lin City City Quality deriving (Eq, Show)
 newL :: City -> City -> Quality -> Link -- genera un link entre dos ciudades distintas
 newL city1 city2 quality = Lin city1 city2 quality
 
-tupleLink :: Link -> (String, String)
-tupleLink (Lin c1 c2 _) = (nameC c1, nameC c2)
+tupleLinks :: Link -> (String, String)
+tupleLinks (Lin c1 c2 _) = (nameC c1, nameC c2)
 
 connectsL :: City -> Link -> Bool   -- indica si esta ciudad es parte de este link
 connectsL city (Lin c1 c2 _) = city == c1 || city == c2

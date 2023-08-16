@@ -9,7 +9,8 @@ data Tunel = Tun [Link] deriving (Eq, Show)
 newT :: [Link] -> Tunel
 newT linkList = if  verificarConexion (tupleList linkList) == [Nothing, Nothing] then Tun [] else Tun linkList
 
-tupleList linkList = [tupleLink x|x <- linkList]
+tupleList :: [Link] -> [(String, String)]
+tupleList linkList = [(tupleLinks x)|x <- linkList]
 
 verificarConexion :: [(String, String)] -> [Maybe String]
 verificarConexion listaTuplas = do

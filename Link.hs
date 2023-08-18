@@ -12,6 +12,10 @@ newL city1 city2 quality = Lin city1 city2 quality
 tupleLinks :: Link -> (City, City)
 tupleLinks (Lin c1 c2 _) = (c1 , c2)
 
+sharedCity :: Link -> Link -> City
+sharedCity (Lin c1 c2 _) link2 | connectsL c1 link2 = c1
+                               | connectsL c2 link2 = c2
+
 connectsL :: City -> Link -> Bool   -- indica si esta ciudad es parte de este link
 connectsL city (Lin c1 c2 _) = city == c1 || city == c2
 

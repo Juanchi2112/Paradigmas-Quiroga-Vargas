@@ -1,6 +1,7 @@
 module Link ( Link, newL, linksL, connectsL, capacityL, delayL, notSharedCity )
    where
 
+import Point
 import City
 import Quality
 
@@ -28,5 +29,6 @@ delayL (Lin _ _ quality) = delayQ quality
 notSharedCity :: Link -> Link -> City
 notSharedCity (Lin c1 c2 _) link2 | connectsL c1 link2 = c2
                                  | connectsL c2 link2 = c1
+                                 | otherwise = newC "" (newP 0 0)
 
 

@@ -1,4 +1,4 @@
-module Link ( Link, newL, linksL, connectsL, capacityL, delayL, tupleLinks, notSharedCity )
+module Link ( Link, newL, linksL, connectsL, capacityL, delayL, notSharedCity )
    where
 
 import City

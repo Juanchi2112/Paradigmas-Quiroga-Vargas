@@ -3,22 +3,23 @@ module Tunel ( Tunel, newT, connectsT, usesT, delayT )
 
 import Link
 import City
-import GHC.Exts.Heap (GenClosure(link))
-import GHC.Num.Backend (c_mpn_add_1)
 
 data Tunel = Tun [Link] deriving (Eq, Show)
 
 newT :: [Link] -> Tunel
 newT linkList = Tun linkList
 
-getFirst :: [(Link)] -> City
-getFirst linkList = fst(tupleLinks (head linkList))
-
-getLast :: [(Link)] -> City
-getLast linkList = snd(tupleLinks (last linkList))
-
 connectsT :: City -> City -> Tunel -> Bool -- inidca si este tunel conceta estas dos ciudades distintas
-connectsT city1 city2 (Tun linkList) = ((city1 == getFirst linkList ) || (city1 == getLast linkList))&&((city2 == getFirst linkList) || (city2 == getLast linkList))
+connectsT city1 city2 (Tun linkList) = condition1 || condition2
+  where
+    notShared = notSharedCity
+    firstElem = linkList !! 0
+    secondElem = linkList !! 1
+    len = length linkList
+    secondLastElem = linkList !! (len - 2)
+    lastElem = linkList !! (len - 1)
+    condition1 = notShared firstElem secondElem == city1 || notShared firstElem secondElem == city2
+    condition2 = notShared secondLastElem lastElem == city1 || notShared secondLastElem lastElem == city2
 
 usesT :: Link -> Tunel -> Bool  -- indica si este tunel atraviesa ese link
 usesT link (Tun linklist) = elem link linklist

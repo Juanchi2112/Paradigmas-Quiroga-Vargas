@@ -1,4 +1,4 @@
-module Link ( Link, newL, linksL, connectsL, capacityL, delayL, tupleLinks )
+module Link ( Link, newL, linksL, connectsL, capacityL, delayL, tupleLinks, notSharedCity )
    where
 
 import City
@@ -8,9 +8,6 @@ data Link = Lin City City Quality deriving (Eq, Show)
 
 newL :: City -> City -> Quality -> Link -- genera un link entre dos ciudades distintas
 newL city1 city2 quality = Lin city1 city2 quality
-
-tupleLinks :: Link -> (City, City)
-tupleLinks (Lin c1 c2 _) = (c1 , c2)
 
 sharedCity :: Link -> Link -> City
 sharedCity (Lin c1 c2 _) link2 | connectsL c1 link2 = c1
@@ -27,3 +24,9 @@ capacityL (Lin _ _ quality) = capacityQ quality
 
 delayL :: Link -> Float     -- la demora que sufre una conexion en este canal
 delayL (Lin _ _ quality) = delayQ quality
+
+notSharedCity :: Link -> Link -> City
+notSharedCity (Lin c1 c2 _) link2 | connectsL c1 link2 = c2
+                                 | connectsL c2 link2 = c1
+
+

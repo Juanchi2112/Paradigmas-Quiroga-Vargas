@@ -1,4 +1,4 @@
-module Link ( Link, newL, linksL, connectsL, capacityL, delayL, notSharedCity )
+module Link ( Link, newL, linksL, connectsL, capacityL, delayL)
    where
 
 import Point

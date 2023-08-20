@@ -1,4 +1,4 @@
-module Region ( Region, newR, foundR, linkR, tunelR, connectedR, linkedR)
+module Region ( Region, newR, foundR, linkR, tunelR, connectedR, linkedR, delayR, availableCapacityForR )
 where
 
 import City
@@ -55,4 +55,10 @@ getSharedLink (Reg _ links _) c1 c2 = foldr (\x acc -> if linksL c1 c2 x then Ju
 
 convertLink :: Maybe Link -> Link
 convertLink (Just link) = link
+
+delayR :: Region -> City -> City -> Float -- dadas dos ciudades conectadas, indica la demora
+{- Hay decisiones que tomar! -}
+
+availableCapacityForR :: Region -> City -> City -> Int -- indica la capacidad disponible entre dos ciudades
+{- Teniendo en cuenta la capacidad que los túneles existentes ocupan -}
 

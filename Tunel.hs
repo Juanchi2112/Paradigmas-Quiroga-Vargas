@@ -25,5 +25,4 @@ usesT :: Link -> Tunel -> Bool  -- indica si este tunel atraviesa ese link
 usesT link (Tun linklist) = elem link linklist
 
 delayT :: Tunel -> Float -- la demora que sufre una conexion en este tunel
-delay (Tun []) = 0
-delayT (Tun (l:linkList)) = delayL l + delayT (Tun linkList) 
+delayT (Tun linkList) = foldr (+) 0 [delayL link | link <- linkList]

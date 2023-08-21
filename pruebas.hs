@@ -3,6 +3,7 @@ import City
 import Quality
 import Link
 import Tunel
+import Region
 
 p1 = newP 5 2
 p2 = newP 6 3
@@ -27,3 +28,21 @@ l4 = newL c4 c5 q3
 l5 = newL c1 c5 q3
 
 tun = newT [l1, l2, l3, l4]
+
+region = newR
+
+region1 = foundR region c1
+region2 = foundR region1 c2
+region3 = foundR region2 c3
+region4 = foundR region3 c4
+region5 = foundR region4 c5
+
+region6 = linkR region5 c1 c2 q1
+region7 = linkR region6 c2 c3 q1
+region8 = linkR region7 c3 c4 q2
+region9 = linkR region8 c4 c5 q3
+region10 = linkR region9 c1 c5 q3
+
+region11 = tunelR region10 [c1,c2,c3,c4,c5]
+regionTest = tunelR region11 [c1,c2,c3]
+

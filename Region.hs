@@ -17,7 +17,9 @@ foundR region@(Reg cities links tunels) city = if ((not (elem city cities))&& no
 -- Si la ciudad ya existe en la región, la función no hace nada y devuelve la misma región
 
 linkR :: Region -> City -> City -> Quality -> Region -- enlaza dos ciudades de la región con un enlace de la calidad indicada
-linkR region@(Reg cities links tunels) c1 c2 qua = if not (linkedR region c1 c2) then Reg cities (links ++ [newL c1 c2 qua]) tunels else region
+linkR region@(Reg cities links tunels) c1 c2 qua | linkedR region c1 c2 = region
+                                                 | elem c1 cities && elem c2 cities = error "no se pueden enlazar las ciudades"
+                                                 |otherwise = Reg cities (links ++ [newL c1 c2 qua]) tunels 
 -- Si el link ya existe en la región, la función no hace nada y devuelve la misma región
 
 tunelR :: Region -> [ City ] -> Region -- genera una comunicación entre dos ciudades distintas de la región

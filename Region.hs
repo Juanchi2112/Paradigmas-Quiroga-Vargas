@@ -13,7 +13,7 @@ newR :: Region
 newR = Reg [] [] []
 
 foundR :: Region -> City -> Region -- agrega una nueva ciudad a la región
-foundR region@(Reg cities links tunels) city = if not (elem city cities) then Reg (cities ++ [city]) links tunels else region
+foundR region@(Reg cities links tunels) city = if ((not (elem city cities))&& not ((nameInRegion city region)||(pointInRegion city region))) then Reg (cities ++ [city]) links tunels else region
 -- Si la ciudad ya existe en la región, la función no hace nada y devuelve la misma región
 
 linkR :: Region -> City -> City -> Quality -> Region -- enlaza dos ciudades de la región con un enlace de la calidad indicada
@@ -22,10 +22,9 @@ linkR region@(Reg cities links tunels) c1 c2 qua = if not (linkedR region c1 c2)
 
 tunelR :: Region -> [ City ] -> Region -- genera una comunicación entre dos ciudades distintas de la región
 -- la lista de ciudades indica el camino ordenado de enlaces que debe tomar el túnel de inicio a fin 
-tunelR region@(Reg cities links tuneles) cityList | checksLinks region cityList = Reg cities links (tuneles ++ [newT (linksBetweenCities region cityList)])
-                                                | connectedR region (head cityList) (last cityList) = region -- si ya existe un tunel entre los extremos, no se crea niguno nuevo y se devuelve la misma region
+tunelR region@(Reg cities links tuneles) cityList | connectedR region (head cityList) (last cityList) = region -- si ya existe un tunel entre los extremos, no se crea niguno nuevo y se devuelve la misma region
+                                                | checksLinks region cityList = Reg cities links (tuneles ++ [newT (linksBetweenCities region cityList)])
                                                 | otherwise = error "No todas las ciudades de la lista se encuentran enlazadas"
-
 connectedR :: Region -> City -> City -> Bool -- indica si estas dos ciudades están conectadas por un túnel
 -- Dice si existe un túnel en la región que tenga estas ciudades por origen o destino
 connectedR (Reg _ _ tunels) c1 c2 = foldr (\x acc -> connectsT c1 c2 x || acc) False tunels
@@ -76,3 +75,8 @@ convertTunel Nothing = error "No existe el tunel entre las ciudades"
 usedCapacity :: Region -> Link -> Int
 usedCapacity region@(Reg _ _ tunelList) link = foldr (+) 0 [1 | tunel <- tunelList, usesT link tunel]
 
+nameInRegion :: City -> Region -> Bool
+nameInRegion city (Reg cityList _ _) = elem (nameC city) [nameC n| n <- cityList]
+
+pointInRegion :: City -> Region -> Bool
+pointInRegion city (Reg cityList _ _)  = elem 0 [distanceC city n| n <- cityList] 

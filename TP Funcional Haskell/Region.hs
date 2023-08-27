@@ -5,28 +5,34 @@ import City
 import Quality
 import Link
 import Tunel
+import Exception
 import Data.List (isInfixOf)
 
-data Region = Reg [City] [Link] [Tunel] deriving (Show)
+data Region = Reg [City] [Link] [Tunel] deriving (Show, Eq)
 
 newR :: Region
 newR = Reg [] [] []
 
 foundR :: Region -> City -> Region -- agrega una nueva ciudad a la región
-foundR region@(Reg cities links tunels) city = if ((not (elem city cities))&& not ((nameInRegion city region)||(pointInRegion city region))) then Reg (cities ++ [city]) links tunels else region
+foundR region@(Reg cities links tunels) city | elem city cities = region
+                                             | nameInRegion city region = error "Ya hay una ciudad con el mismo nombre"
+                                             | pointInRegion city region = error "Ya existe una ciudad con la misma ubicacion" 
+                                             | otherwise = Reg (cities ++ [city]) links tunels
 -- Si la ciudad ya existe en la región, la función no hace nada y devuelve la misma región
 
 linkR :: Region -> City -> City -> Quality -> Region -- enlaza dos ciudades de la región con un enlace de la calidad indicada
 linkR region@(Reg cities links tunels) c1 c2 qua | linkedR region c1 c2 = region
-                                                 | elem c1 cities && elem c2 cities = error "no se pueden enlazar las ciudades"
-                                                 |otherwise = Reg cities (links ++ [newL c1 c2 qua]) tunels 
+                                                 | elem c1 cities && elem c2 cities = Reg cities (links ++ [newL c1 c2 qua]) tunels 
+                                                 | otherwise = error "Alguna de las ciudades no se encuentra en la región"
 -- Si el link ya existe en la región, la función no hace nada y devuelve la misma región
 
 tunelR :: Region -> [ City ] -> Region -- genera una comunicación entre dos ciudades distintas de la región
 -- la lista de ciudades indica el camino ordenado de enlaces que debe tomar el túnel de inicio a fin 
-tunelR region@(Reg cities links tuneles) cityList | connectedR region (head cityList) (last cityList) = region -- si ya existe un tunel entre los extremos, no se crea niguno nuevo y se devuelve la misma region
-                                                | checksLinks region cityList = Reg cities links (tuneles ++ [newT (linksBetweenCities region cityList)])
-                                                | otherwise = error "No todas las ciudades de la lista se encuentran enlazadas"
+tunelR region@(Reg cities links tuneles) cityList | length cityList <= 1 = error "La lista de ciudades debe contener al menos dos ciudades"
+                                                  | connectedR region (head cityList) (last cityList) = region -- si ya existe un tunel entre los extremos, no se crea niguno nuevo y se devuelve la misma region
+                                                  | linksBetweenCities region cityList == [] = error "No hay capacidad disponible para un tunel más"
+                                                  | checksLinks region cityList = Reg cities links (tuneles ++ [newT (linksBetweenCities region cityList)])
+                                                  | otherwise = error "No todas las ciudades de la lista se encuentran enlazadas"
 connectedR :: Region -> City -> City -> Bool -- indica si estas dos ciudades están conectadas por un túnel
 -- Dice si existe un túnel en la región que tenga estas ciudades por origen o destino
 connectedR (Reg _ _ tunels) c1 c2 = foldr (\x acc -> connectsT c1 c2 x || acc) False tunels
@@ -40,7 +46,8 @@ delayR region c1 c2 = delayT (convertTunel (getSharedTunel region c1 c2))
 
 availableCapacityForR :: Region -> City -> City -> Int -- indica la capacidad disponible entre dos ciudades
 -- Teniendo en cuenta la capacidad que los túneles existentes ocupan
-availableCapacityForR region c1 c2 = (capacityL link) - (usedCapacity region link)   
+availableCapacityForR region c1 c2 | linkedR region c1 c2 = (capacityL link) - (usedCapacity region link)   
+                                   | otherwise = error "Las ciudades no estan enlazadas"
     where link = convertLink (getSharedLink region c1 c2)
 
 
@@ -58,7 +65,7 @@ linksBetweenCities :: Region -> [City] -> [Link]
 linksBetweenCities _ [] = []
 linksBetweenCities _ [_] = []
 linksBetweenCities region (city1:city2:rest) = if (availableCapacityForR region city1 city2) >= 1 then [convertLink (getSharedLink region city1 city2)] ++ (linksBetweenCities region (city2:rest)) 
-                                                else error "No hay capacidad disponible para un tunel más"
+                                                else []
 
 getSharedLink :: Region -> City -> City -> Maybe Link
 getSharedLink (Reg _ links _) c1 c2 = foldr (\x acc -> if linksL c1 c2 x then Just x else acc) Nothing links

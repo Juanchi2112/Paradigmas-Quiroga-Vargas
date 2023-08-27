@@ -8,7 +8,8 @@ import Quality
 data Link = Lin City City Quality deriving (Eq, Show)
 
 newL :: City -> City -> Quality -> Link -- genera un link entre dos ciudades distintas
-newL city1 city2 quality = Lin city1 city2 quality
+newL city1 city2 quality | city1 /= city2 = Lin city1 city2 quality
+                         | otherwise = error "las ciudades deben ser distintas"
 
 connectsL :: City -> Link -> Bool   -- indica si esta ciudad es parte de este link
 connectsL city (Lin c1 c2 _) = city == c1 || city == c2

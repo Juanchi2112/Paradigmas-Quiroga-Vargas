@@ -6,7 +6,7 @@ import Point
 data City = Cit String Point deriving (Eq, Show)
 
 newC :: String -> Point -> City
-newC name position = Cit name position
+newC = Cit
 
 nameC :: City -> String
 nameC (Cit name _) = name

@@ -7,14 +7,12 @@ import City
 data Tunel = Tun [Link] deriving (Eq, Show)
 
 newT :: [Link] -> Tunel
-newT linkList = Tun linkList
+newT linkList | (length linkList) >= 1 = Tun linkList
+              | otherwise = error "La lista está vacía"
 
-city_extreme :: City -> Tunel -> Bool
-city_extreme city (Tun linkList) 
-    | len <= 1 && connectsL city firstLink = True
-    | len >= 2 && (connectsL city firstLink && not (connectsL city secondLink)) || 
-                   (connectsL city lastLink && not (connectsL city secondLastLink)) = True
-    | otherwise = False
+
+tunel_extreme :: City -> Tunel -> Bool
+tunel_extreme city (Tun linkList) = (connectsL city firstLink && not (connectsL city secondLink)) || (connectsL city lastLink && not (connectsL city secondLastLink))
     where
         firstLink = head linkList
         secondLink = linkList !! 1
@@ -24,7 +22,8 @@ city_extreme city (Tun linkList)
 
 
 connectsT :: City -> City -> Tunel -> Bool -- inidca si este tunel conceta estas dos ciudades distintas
-connectsT city1 city2 tunel = city1 /= city2 && city_extreme city1 tunel && city_extreme city2 tunel
+connectsT city1 city2 tunel@(Tun linkList) | (length linkList >= 2) = city1 /= city2 && tunel_extreme city1 tunel && tunel_extreme city2 tunel
+                                           | (length linkList == 1) = city1 /= city2 && linksL city1 city2 (linkList !! 0)
 
 usesT :: Link -> Tunel -> Bool  -- indica si este tunel atraviesa ese link
 usesT link (Tun linklist) = elem link linklist

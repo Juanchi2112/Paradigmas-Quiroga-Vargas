@@ -22,6 +22,3 @@ capacityL (Lin _ _ quality) = capacityQ quality
 
 delayL :: Link -> Float    
 delayL (Lin city1 city2 quality) = delayQ quality * distanceC city1 city2
-
-
-

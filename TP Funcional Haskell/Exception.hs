@@ -1,7 +1,6 @@
 module Exception (testF)
     where
 
-
 import Control.Exception
 import System.IO.Unsafe
 

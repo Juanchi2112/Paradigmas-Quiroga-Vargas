@@ -32,8 +32,6 @@ l3 = newL c3 c4 q2
 l4 = newL c4 c5 q3
 l5 = newL c1 c5 q3
 
-tun = newT [l1, l2, l3, l4]
-
 region = newR
 
 region1 = foundR region c1
@@ -71,8 +69,3 @@ test = [allCapacityUsed == 0,
      delayTunc3c5 == 10.5,
      testF sameCityName,
      testF sameCityPoint]
-
-
-
-
-

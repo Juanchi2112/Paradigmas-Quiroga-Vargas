@@ -45,7 +45,6 @@ availableCapacityForR region c1 c2 | linkedR region c1 c2 = capacityL link - use
                                    | otherwise = error "Las ciudades no estan enlazadas"
     where link = convertLink (getSharedLink region c1 c2)
 
-
 checksLinks :: Region -> [City] -> Bool
 checksLinks _ [] = True
 checksLinks _ [_] = True

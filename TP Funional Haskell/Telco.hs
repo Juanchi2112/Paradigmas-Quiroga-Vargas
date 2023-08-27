@@ -4,16 +4,13 @@ import Quality
 import Link
 import Tunel
 import Region
-
-import Control.Exception
-import System.IO.Unsafe
+import Exception
 
 p1 = newP 5 2
 p2 = newP 6 3
 p3 = newP 1 0
 p4 = newP 10 5
 p5 = newP 4 1
-
 
 c1 = newC "bsas" p1
 c2 = newC "sj" p2
@@ -55,17 +52,6 @@ region10 = linkR region9 c1 c5 q3
 region11 = tunelR region10 [c1,c2,c3,c4,c5]
 regionTest = tunelR region11 [c1,c2,c3]
 
-testF :: Show a => a -> Bool
-testF action = unsafePerformIO $ do
-    result <- tryJust isException (evaluate action)
-    return $ case result of
-        Left _ -> True
-        Right _ -> False
-    where
-        isException :: SomeException -> Maybe ()
-        isException _ = Just ()
-
--- ahora pueden evaluar
 sameCityCheck = [ testF (foundR region11 copyCity),
       testF (foundR region11 diferentCity ) ]
 

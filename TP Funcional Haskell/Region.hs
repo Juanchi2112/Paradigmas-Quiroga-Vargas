@@ -25,28 +25,26 @@ linkR region@(Reg cities links tunels) c1 c2 qua | linkedR region c1 c2 = region
 
 
 tunelR :: Region -> [ City ] -> Region 
-
 tunelR region@(Reg cities links tuneles) cityList | length cityList <= 1 = error "La lista de ciudades debe contener al menos dos ciudades"
                                                   | connectedR region (head cityList) (last cityList) = region
                                                   | null (linksBetweenCities region cityList) = error "No hay capacidad disponible para un tunel más"
                                                   | checksLinks region cityList = Reg cities links (tuneles ++ [newT (linksBetweenCities region cityList)])
                                                   | otherwise = error "No todas las ciudades de la lista se encuentran enlazadas"
-connectedR :: Region -> City -> City -> Bool
 
+connectedR :: Region -> City -> City -> Bool
 connectedR (Reg _ _ tunels) c1 c2 = foldr (\x acc -> connectsT c1 c2 x || acc) False tunels
 
 linkedR :: Region -> City -> City -> Bool 
-
 linkedR (Reg _ links _) c1 c2 = foldr (\x acc -> linksL c1 c2 x || acc) False links
 
 delayR :: Region -> City -> City -> Float 
 delayR region c1 c2 = delayT (convertTunel (getSharedTunel region c1 c2))
 
 availableCapacityForR :: Region -> City -> City -> Int
-
 availableCapacityForR region c1 c2 | linkedR region c1 c2 = capacityL link - usedCapacity region link   
                                    | otherwise = error "Las ciudades no estan enlazadas"
     where link = convertLink (getSharedLink region c1 c2)
+
 
 checksLinks :: Region -> [City] -> Bool
 checksLinks _ [] = True

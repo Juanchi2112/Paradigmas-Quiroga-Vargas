@@ -11,7 +11,7 @@ newT linkList = Tun linkList
 
 city_extreme :: City -> Tunel -> Bool
 city_extreme city (Tun linkList) 
-    | len == 1 && connectsL city firstLink = True
+    | len <= 1 && connectsL city firstLink = True
     | len >= 2 && (connectsL city firstLink && not (connectsL city secondLink)) || 
                    (connectsL city lastLink && not (connectsL city secondLastLink)) = True
     | otherwise = False

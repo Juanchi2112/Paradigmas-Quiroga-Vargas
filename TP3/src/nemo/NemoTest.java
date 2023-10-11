@@ -1,5 +1,6 @@
 package nemo;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
@@ -8,18 +9,20 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class NemoTest {
 
+    private Coordinate zeroPoint;
+    @BeforeEach public void setUp() {
+        zeroPoint = new Coordinate( 0, 0 );
+    }
+
     @Test public void test00() {
         Submarine nemo = new Submarine( 0, 0 );
-        ensureSubmarineCurrentState( nemo, new Coordinate( 0, 0 ), 0, "East" );
+        ensureSubmarineCurrentState( nemo, zeroPoint, 0, "East" );
     }
 
     @Test public void test01() {
         Submarine nemo = new Submarine( 0, 0 );
         nemo.executeCommands( "" );
-        assertEquals( nemo.getPosition(), new Coordinate( 0, 0 ) );
-        assertEquals( nemo.getDepth(), 0 );
-        assertEquals( nemo.getDirection(), "East" );
-
+        ensureSubmarineCurrentState( nemo, zeroPoint, 0, "East" );
     }
 
     @Test public void test02() {
@@ -40,10 +43,10 @@ public class NemoTest {
     @Test public void test04() {
         Submarine nemo = new Submarine( 0, 0 );
         nemo.executeCommands( "l" );
-        assertEquals( nemo.getDirection(), "North" );
+        ensureSubmarineCurrentState( nemo, zeroPoint, 0, "North" );
 
         nemo.executeCommands( "rr" );
-        assertEquals( nemo.getDirection(), "South" );
+        ensureSubmarineCurrentState( nemo, zeroPoint, 0, "South" );
     }
 
     @Test public void test05() {
@@ -57,21 +60,19 @@ public class NemoTest {
 
     @Test public void test06() {
         Submarine nemo = new Submarine( 0, 0 );
-        ensureSubmarineCurrentState( nemo, new Coordinate( 0, 0 ), 0, "East" );
+        ensureSubmarineCurrentState( nemo, zeroPoint, 0, "East" );
 
         nemo.executeCommands( "m" );
-        ensureSubmarineCurrentState( nemo, new Coordinate( 0, 0 ), 0, "East" );
+        ensureSubmarineCurrentState( nemo, zeroPoint, 0, "East" );
     }
 
     @Test public void test07() {
         Submarine nemo = new Submarine( 0, 0 );
-        ensureSubmarineCurrentState( nemo, new Coordinate( 0, 0 ), 0, "East" );
+        ensureSubmarineCurrentState( nemo, zeroPoint, 0, "East" );
 
         nemo.executeCommands( "dm" );
-        ensureSubmarineCurrentState( nemo, new Coordinate( 0, 0 ), 1, "East" );
+        ensureSubmarineCurrentState( nemo, zeroPoint, 1, "East" );
     }
-
-
 
     @Test public void test08() {
         Submarine nemo = new Submarine( 0, 0 );
@@ -79,6 +80,7 @@ public class NemoTest {
         assertThrowsLike( () -> nemo.executeCommands( "m" ),
                           Submarine.DestructionMessage );
     }
+
 
     private void ensureSubmarineCurrentState( Submarine submarine, Coordinate position, int depth, String direction ) {
         assertEquals( submarine.getPosition(), position );

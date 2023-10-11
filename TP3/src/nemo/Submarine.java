@@ -12,7 +12,7 @@ public class Submarine {
     public Channel channel = new Channel( this );
     public static String DestructionMessage = "¡¡Submarino destruído por exceso de chocolate!!";
 
-    public Submarine(int x, int y ) {
+    public Submarine( int x, int y ) {
         position = new Coordinate( x, y );
         depthLevels.add( DepthLevel.Surface() );
     }

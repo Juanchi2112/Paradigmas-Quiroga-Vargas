@@ -13,7 +13,7 @@ public abstract class Direction {
     public static Direction West() {
         return new DWest();
     }
-    public abstract Position move(Position position);
+    public abstract Point move(Point position);
     public abstract Direction right();
     public abstract Direction left();
     public abstract String toString();

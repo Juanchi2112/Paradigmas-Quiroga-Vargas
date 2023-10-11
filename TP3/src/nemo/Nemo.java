@@ -1,62 +1,71 @@
 package nemo;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Nemo {
 
-    public Position position;
+    public Point position;
     public int depth;
 
     public Direction direction = Direction.East();
 
-    private final Map<Character, Runnable> commandsMap = new HashMap<>() {{
-        put('d', () -> d());
-        put('u', () -> u());
-        put('r', () -> r());
-        put('l', () -> l());
-        put('f', () -> f());
-        put('m', () -> m());
-    }};
+    public List<Command> commandList = List.of(
+        new Command('d', this::d),
+        new Command( 'u', this::u),
+        new Command( 'r', this::r),
+        new Command( 'l', this::l),
+        new Command('f', this::f),
+        new Command( 'm', this::m)
+    );
+
 
     public Nemo( int x, int y, int depth ) {
-        position = new Position( x, y );
+        position = new Point( x, y );
         this.depth = depth;
     }
 
     public void executeCommands( String commands ) {
-        commands.chars().mapToObj(c -> (char) c).forEach( command -> commandsMap.get(command).run());
+
+        commands.chars().mapToObj(c -> (char) c).forEach( character -> findCommand(character).execute() );
     }
 
-    private void f() {
+    public Command findCommand(Character character) {
+        return commandList.stream().filter( command -> command.canHandle(character) ).findFirst().get();
+    }
+
+    public void f() {
         position = direction.move(position);
     }
 
-    private void l() {
+    public void l() {
         direction = direction.left();
     }
 
-    private void r() {
+    public void r() {
         direction = direction.right();
     }
 
-    private void d() {
+    public void d() {
         depth ++;
     }
 
-    private void u() {
+    public void u() {
         if (depth > 0) {
             depth --;
         }
     }
 
-    private void m() {
+    public void m() {
         if ( depth > 1 ) {
             throw new RuntimeException("¡¡Submarino destruído por exceso de chocolate!!");
         }
     }
 
-    public Position getPosition() { return position; }
+    public Point getPosition() { return position; }
     public int getDepth() { return depth; }
     public String getDirection() { return direction.toString(); }
 

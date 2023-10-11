@@ -1,8 +1,8 @@
 package nemo;
 
 public class DWest extends Direction {
-    public Position move(Position position) {
-        return new Position(position.getX() - 1, position.getY());
+    public Point move(Point position) {
+        return new Point(position.getX() - 1, position.getY());
     }
 
     public Direction right() {

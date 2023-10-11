@@ -1,8 +1,8 @@
 package nemo;
 
 public class DSouth extends Direction {
-    public Position move(Position position) {
-        return new Position(position.getX(), position.getY() - 1);
+    public Point move(Point position) {
+        return new Point(position.getX(), position.getY() - 1);
     }
 
     public Direction right() {

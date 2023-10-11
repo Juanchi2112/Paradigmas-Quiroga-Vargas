@@ -13,7 +13,7 @@ public abstract class Direction {
     }
     public static Direction East() { return new East(); }
 
-    public abstract Coordinate addOneInThisDirection(Coordinate coordinate );
+    public abstract Coordinate addOneInThisDirection( Coordinate coordinate );
 
     public abstract Direction right();
     public abstract Direction left();

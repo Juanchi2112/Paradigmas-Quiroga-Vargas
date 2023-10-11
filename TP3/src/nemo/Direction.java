@@ -1,21 +1,23 @@
 package nemo;
 
 public abstract class Direction {
+
     public static Direction North() {
-        return new DNorth();
+        return new North();
     }
     public static Direction South() {
-        return new DSouth();
-    }
-    public static Direction East() {
-        return new DEast();
+        return new South();
     }
     public static Direction West() {
-        return new DWest();
+        return new West();
     }
-    public abstract Point move(Point position);
+    public static Direction East() { return new East(); }
+
+    public abstract Coordinate addOneInThisDirection(Coordinate coordinate );
+
     public abstract Direction right();
     public abstract Direction left();
+
     public abstract String toString();
 
 }

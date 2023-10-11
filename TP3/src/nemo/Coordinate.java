@@ -2,17 +2,17 @@ package nemo;
 
 import java.util.Objects;
 
-public class Point {
+public class Coordinate {
     public int x;
     public int y;
 
-    public Point(int x, int y ) {
+    public Coordinate( int x, int y ) {
         this.x = x;
         this.y = y;
     }
 
-    public Point add(Point other ) {
-        return new Point( x + other.x, y + other.y );
+    public Coordinate add( int x, int y ) {
+        return new Coordinate( getX() + x, getY() + y );
     }
 
     public int hashCode() {
@@ -23,8 +23,8 @@ public class Point {
         return this == obj ||
                 ( obj != null &&
                         getClass() == obj.getClass() &&
-                        x == ( ((Point)obj).x ) &&
-                        y == ( ((Point)obj).y));
+                        x == ( ((Coordinate)obj).x ) &&
+                        y == ( ((Coordinate)obj).y));
     }
 
     public int getX() { return x; }

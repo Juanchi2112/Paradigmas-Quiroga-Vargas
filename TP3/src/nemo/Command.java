@@ -2,17 +2,16 @@ package nemo;
 
 public class Command {
 
-    public Nemo submarine;
-    public Character character;
+    public Character key;
     public Runnable command;
 
-    public Command(Character character, Runnable command) {
-        this.character = character;
+    public Command( Character key, Runnable command ) {
+        this.key = key;
         this.command = command;
     }
 
-    public boolean canHandle(Character character) {
-        return this.character == character;
+    public boolean canHandle( Character key ) {
+        return this.key == key;
     }
 
     public void execute() {

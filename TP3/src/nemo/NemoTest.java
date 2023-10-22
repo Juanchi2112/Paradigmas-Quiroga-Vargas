@@ -113,8 +113,10 @@ public class NemoTest {
         assertThrowsLike( () -> nemo.executeCommands( "m" ),
                 Submarine.DestructionMessage );
     }
-    @Test public void test(){
-
+    @Test public void testMultipleOrdersToNemo(){
+        Submarine nemo = NewNemo();
+        nemo.executeCommands("dflrum");
+        ensureSubmarineCurrentState( nemo, new Coordinate(1,0), 0, "East" );
     }
     private void ensureSubmarineCurrentState( Submarine submarine, Coordinate position, int depth, String direction ) {
         assertEquals( submarine.getPosition(), position );

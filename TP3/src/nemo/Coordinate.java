@@ -3,16 +3,17 @@ package nemo;
 import java.util.Objects;
 
 public class Coordinate {
-    public int x;
-    public int y;
+
+    private int x;
+    private int y;
 
     public Coordinate( int x, int y ) {
         this.x = x;
         this.y = y;
     }
 
-    public Coordinate add( int x, int y ) {
-        return new Coordinate( getX() + x, getY() + y );
+    public Coordinate add( Coordinate point ) {
+        return new Coordinate( x + point.getX(), y + point.getY() );
     }
 
     public int hashCode() {
@@ -29,6 +30,5 @@ public class Coordinate {
 
     public int getX() { return x; }
     public int getY() { return y; }
+
 }
-
-

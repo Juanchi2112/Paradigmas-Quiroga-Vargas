@@ -1,8 +1,9 @@
 package nemo;
 
 public class East extends Direction {
-    public Coordinate addOneInThisDirection(Coordinate coordinate ) {
-        return coordinate.add( 1, 0 );
+
+    public Coordinate differential() {
+        return new Coordinate(1, 0);
     }
 
     public Direction right() {
@@ -11,10 +12,6 @@ public class East extends Direction {
 
     public Direction left() {
         return Direction.North();
-    }
-
-    public String toString() {
-        return "East";
     }
 
 }

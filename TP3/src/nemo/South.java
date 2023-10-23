@@ -1,8 +1,9 @@
 package nemo;
 
 public class South extends Direction {
-    public Coordinate addOneInThisDirection(Coordinate coordinate ) {
-        return coordinate.add(0, -1 );
+
+    public Coordinate differential() {
+        return new Coordinate(0, -1);
     }
 
     public Direction right() {
@@ -11,10 +12,6 @@ public class South extends Direction {
 
     public Direction left() {
         return Direction.East();
-    }
-
-    public String toString() {
-        return "South";
     }
 
 }

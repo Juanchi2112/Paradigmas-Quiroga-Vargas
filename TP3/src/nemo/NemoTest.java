@@ -10,125 +10,158 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class NemoTest {
 
     private Coordinate zeroPoint;
+    private Direction east;
+    private Direction south;
+    private Direction west;
+    private Direction north;
+    private Nemo nemo;
+
     @BeforeEach public void setUp() {
-        zeroPoint = new Coordinate( 0, 0 );
+        zeroPoint = new Coordinate(0, 0);
+        east = Direction.East();
+        south = Direction.South();
+        west = Direction.West();
+        north = Direction.North();
+        nemo = new Nemo(zeroPoint, east);
     }
 
     @Test public void testNewNemo() {
-        ensureSubmarineCurrentState(NewNemo(), zeroPoint, 0, "East" );
+        ensureNemoCurrentState( nemo, zeroPoint, 0, east );
     }
 
-    @Test public void testEmptyCommand() {
-        Submarine nemo = NewNemo();
-        nemo.executeCommands( "" );
-        ensureSubmarineCurrentState(NewNemo(), zeroPoint, 0, "East" );
+    @Test public void testNewNemoCanBeInstantiatedDifferently() {
+        Nemo otherNemo = new Nemo( new Coordinate(1, 1), west );
+        ensureNemoCurrentState( otherNemo, new Coordinate(1, 1), 0, west );
+    }
+
+    @Test public void testEmptyCommandString() {
+        nemo.executeCommands("");
+        ensureNemoCurrentState( nemo , zeroPoint, 0, east );
     }
 
     @Test public void testNemoDescendsOneLevelCorrectly() {
-        Submarine nemo = NewNemo();
-        nemo.executeCommands( "d" );
-        assertEquals( nemo.getDepth(), 1 );
+        nemo.executeCommands("d");
+        assertEquals(nemo.getDepth(), 1);
     }
 
-    @Test public void testNemoAscendsOneLevelCorrectly() {
-        Submarine nemo = NewNemo();
-        nemo.executeCommands( "u" );
-        assertEquals( nemo.getDepth(), 0 );
+    @Test public void testNemoDescendsTwoLevelsCorrectly() {
+        nemo.executeCommands("dd");
+        assertEquals(nemo.getDepth(), 2);
     }
 
-    @Test public void testNemoNoAscendsMoreThanSurface() {
-        Submarine nemo = NewNemo();
-        nemo.executeCommands( "du" );
-        assertEquals( nemo.getDepth(), 0 );
+    @Test public void testNemoDescendsAsManyLevelsAsNeededCorrectly() {
+        nemo.executeCommands("dddddddddddd");
+        assertEquals(nemo.getDepth(), 12);
     }
 
-    @Test public void testTurnsRightCorrectly() {
-        Submarine nemo = NewNemo();
-        nemo.executeCommands( "l" );
-        ensureSubmarineCurrentState( nemo, zeroPoint, 0, "North" );}
+    @Test public void testNemoRemainsTheSameWhenAscendInTheSurface() {
+        nemo.executeCommands("u");
+        ensureNemoCurrentState( nemo, zeroPoint, 0, east );
+    }
 
-        @Test public void testTurnsLeftCorrectly() {
-            Submarine nemo = NewNemo();
+    @Test public void testNemoAscendsCorrectly() {
+        nemo.executeCommands("du");
+        assertEquals(nemo.getDepth(), 0);
+    }
+
+    @Test public void testNemoTurnsRightCorrectly() {
+        nemo.executeCommands("l");
+        ensureNemoCurrentState(nemo, zeroPoint, 0, north );
+    }
+
+    @Test public void testNemoTurnsLeftCorrectly() {
         nemo.executeCommands( "r" );
-        ensureSubmarineCurrentState( nemo, zeroPoint, 0, "South" );
-    }
-    @Test public void testTurnsLeftandRightCorrectly() {
-        Submarine nemo = NewNemo();
-        nemo.executeCommands( "lr" );
-        ensureSubmarineCurrentState( nemo, zeroPoint, 0, "East" );
-    }
-    @Test public void testTurnsRightandLeftCorrectly() {
-        Submarine nemo = NewNemo();
-        nemo.executeCommands( "rl" );
-        ensureSubmarineCurrentState( nemo, zeroPoint, 0, "East" );
+        ensureNemoCurrentState( nemo, zeroPoint, 0, south );
     }
 
-    @Test public void testMovesForwardCorrectly() {
-        Submarine nemo = NewNemo();
+    @Test public void testNemoTurnsLeftAndRightCorrectly() {
+        nemo.executeCommands( "lr" );
+        ensureNemoCurrentState( nemo, zeroPoint, 0, east );
+    }
+
+    @Test public void testNemoFullRotation() {
+        nemo.executeCommands( "r" );
+        assertEquals( nemo.getDirection(), south );
+
+        nemo.executeCommands( "r");
+        assertEquals( nemo.getDirection(), west );
+
+        nemo.executeCommands( "r");
+        assertEquals( nemo.getDirection(), north );
+
+        nemo.executeCommands( "r");
+        assertEquals( nemo.getDirection(), east );
+    }
+
+    @Test public void testNemoMovesForwardCorrectly() {
         nemo.executeCommands( "f" );
         assertEquals( nemo.getPosition(), new Coordinate(1, 0 ) );
-
-        nemo.executeCommands( "lf" );
-        assertEquals( nemo.getPosition(), new Coordinate( 1,1 ) );
     }
 
-    @Test public void testNemoRealeaseTheCapsuleOnTheSurface() {
-        Submarine nemo = NewNemo();
-        ensureSubmarineCurrentState( nemo, zeroPoint, 0, "East" );
+    @Test public void testNemoMovesForwardTwiceCorrectly() {
+        nemo.executeCommands( "ff" );
+        assertEquals( nemo.getPosition(), new Coordinate(2, 0 ) );
+    }
 
+    @Test public void testNemoMovesInAnyDirectionCorrectly() {
+        nemo.executeCommands( "lflf" );
+        assertEquals( nemo.getPosition(), new Coordinate(-1, 1 ) );
+    }
+
+    @Test public void testNemoReleaseTheCapsuleOnTheSurfaceWithNoVisibleEffect() {
         nemo.executeCommands( "m" );
-        ensureSubmarineCurrentState( nemo, zeroPoint, 0, "East" );
+        ensureNemoCurrentState( nemo, zeroPoint, 0, east );
     }
 
-    @Test public void testNemoRealeaseTheCapsuleOneLevelDownTheSurface() {
-        Submarine nemo = NewNemo();
-        ensureSubmarineCurrentState( nemo, zeroPoint, 0, "East" );
-
+    @Test public void testNemoReleaseTheCapsuleInTheFirstDepthLevelWithNoVisibleEffect() {
         nemo.executeCommands( "dm" );
-        ensureSubmarineCurrentState( nemo, zeroPoint, 1, "East" );
+        ensureNemoCurrentState( nemo, zeroPoint, 1, east );
     }
 
-    @Test public void testNemoExploteRealeasingTheCapsuleTwoLevelDownTheSurface() {
-        Submarine nemo = NewNemo();
+    @Test public void testNemoExplodeReleasingTheCapsuleInAForbiddenLevelDepth() {
         nemo.executeCommands( "dd" );
         assertThrowsLike( () -> nemo.executeCommands( "m" ),
-                          Submarine.DestructionMessage );
+                          Nemo.DestructionMessage );
     }
-    @Test public void testNemoFullFillsAllItsFunctionsOnTheSurface(){
-        Submarine nemo = NewNemo();
+
+    @Test public void testNemoExplodeReleasingTheCapsuleInADeeperForbiddenLevelDepth() {
+        nemo.executeCommands( "dddd" );
+        assertThrowsLike( () -> nemo.executeCommands( "m" ),
+                          Nemo.DestructionMessage );
+    }
+
+    @Test public void testNemoCompleteBehaviourOnTheSurface(){
         nemo.executeCommands( "lflfrm" );
-        ensureSubmarineCurrentState( nemo, new Coordinate (-1,1), 0, "North" );
+        ensureNemoCurrentState( nemo, new Coordinate (-1,1), 0, north );
     }
-    @Test public void testNemoFullFillsAllItsFunctionsOneLevelDownTheSurface(){
-        Submarine nemo = NewNemo();
+
+    @Test public void testNemoCompleteBehaviourInTheFirstDepthLevel(){
         nemo.executeCommands( "d" );
         nemo.executeCommands( "ffllmlf" );
-        ensureSubmarineCurrentState( nemo,new Coordinate (2,-1), 1, "South" );
+        ensureNemoCurrentState( nemo,new Coordinate (2,-1), 1, south );
     }
-    @Test public void testNemoFullFillsAllItsFunctionsTwoLevelsDownTheSurface(){
-        Submarine nemo = NewNemo();
+
+    @Test public void testNemoCompleteBehaviourTwoLevelsDownTheSurface(){
         nemo.executeCommands("dd");
         nemo.executeCommands( "flflflfl" );
-        ensureSubmarineCurrentState( nemo, zeroPoint, 2, "East" );
+        ensureNemoCurrentState( nemo, zeroPoint, 2, east );
         assertThrowsLike( () -> nemo.executeCommands( "m" ),
-                Submarine.DestructionMessage );
+                Nemo.DestructionMessage );
     }
-    @Test public void testMultipleOrdersToNemo(){
-        Submarine nemo = NewNemo();
+
+    @Test public void testNemoBehavesCorrectlyWithMultipleCommands(){
         nemo.executeCommands("dflrum");
-        ensureSubmarineCurrentState( nemo, new Coordinate(1,0), 0, "East" );
+        ensureNemoCurrentState( nemo, new Coordinate(1,0), 0, east );
     }
-    private void ensureSubmarineCurrentState( Submarine submarine, Coordinate position, int depth, String direction ) {
-        assertEquals( submarine.getPosition(), position );
-        assertEquals( submarine.getDepth(), depth );
-        assertEquals( submarine.getDirection(), direction );
+
+    private void ensureNemoCurrentState(Nemo nemo, Coordinate position, int depth, Direction direction ) {
+        assertEquals( nemo.getPosition(), position );
+        assertEquals( nemo.getDepth(), depth );
+        assertEquals( nemo.getDirection(), direction );
     }
 
     private void assertThrowsLike( Executable executable, String message ) {
         assertEquals( assertThrows( RuntimeException.class, executable ).getMessage(), message );
-    }
-    private static Submarine NewNemo() {
-        return new Submarine(0, 0);
     }
 
 }

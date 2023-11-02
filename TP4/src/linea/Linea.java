@@ -7,16 +7,16 @@ public class Linea {
 
     public static String FullColumnMessage = "Columna llena";
 
-    public int base;
-    public int height;
+    private int base;
+    private int height;
+    private List<List<Character>> columns = new ArrayList<>();
 
-    public GameMode gameMode;
-    public GameStatus gameStatus = GameStatus.playingRed();
-    public List<List<Character>> columns = new ArrayList<>();
+    private GameMode gameMode;
+    private GameStatus gameStatus = new PlayingRed( this );
 
-    public boolean redWon = false;
-    public boolean blueWon = false;
-    public boolean draw = false;
+    private boolean redWon = false;
+    private boolean blueWon = false;
+    private boolean draw = false;
 
     public Linea( int base, int height, char gameModeKey ) {
         this.base = base;
@@ -31,22 +31,32 @@ public class Linea {
     }
 
     public Linea playRedAt( int column ) {
-        gameStatus.playWithRed( this, column );
-        redWon = gameMode.checkWin( this );
-        refreshDraw();
-        gameStatus = gameStatus.next();
+        gameStatus.playWithRed( column );
+        redWon = processPlayerLastMove();
         return this;
     }
 
     public Linea playBlueAt( int column ) {
-        gameStatus.playWithBlue( this, column );
-        blueWon = gameMode.checkWin( this );
-        refreshDraw();
-        gameStatus = gameStatus.next();
+        gameStatus.playWithBlue( column );
+        blueWon = processPlayerLastMove();
         return this;
     }
 
-    public void addPieceTo(int columnIndex ) {
+    private boolean processPlayerLastMove() {
+        boolean playerWon = gameMode.checkWin( this );
+        checkDraw();
+        gameStatus.next();
+        return playerWon;
+    }
+
+    private void checkDraw() {
+        draw = !win() && columns.stream().allMatch( column -> column.size() == height );
+        if (draw) {
+            gameStatus.finishGame();
+        }
+    }
+    
+    public void addPieceTo( int columnIndex ) {
         if (columnIndex < 0 || columnIndex >= base) {
             throw new RuntimeException( "Columna fuera de rango" );
         }
@@ -58,36 +68,18 @@ public class Linea {
         }
     }
 
-    public boolean checkColumnsAndRows() {
-        // Verificar filas
-        for (int row = 1; row <= height; row++) {
-            for (int column = 1; column <= base - 3; column++) {
+    private boolean check4ConsecutivePieces(int startRow, int startColumn, int rowDiff, int columnDiff) {
+        for (int row = startRow; row <= height - rowDiff; row++) {
+            for (int column = startColumn; column <= base - columnDiff; column++) {
                 boolean consecutiveFound = true;
                 for (int i = 0; i < 4; i++) {
-                    if (pieceAt( row, column + i) != gameStatus.colorPiece() ) {
+                    if (pieceAt(row + i * rowDiff, column + i * columnDiff) != gameStatus.colorPiece()) {
                         consecutiveFound = false;
                         break;
                     }
                 }
                 if (consecutiveFound) {
-                    gameStatus = GameStatus.gameFinished();
-                    return true;
-                }
-            }
-        }
-
-        // Verificar columnas
-        for (int column = 1; column <= base; column++) {
-            for (int row = 1; row <= height - 3; row++) {
-                boolean consecutiveFound = true;
-                for (int i = 0; i < 4; i++) {
-                    if (pieceAt( row + i, column) != gameStatus.colorPiece()) {
-                        consecutiveFound = false;
-                        break;
-                    }
-                }
-                if (consecutiveFound) {
-                    gameStatus = GameStatus.gameFinished();
+                    gameStatus.finishGame();
                     return true;
                 }
             }
@@ -95,71 +87,18 @@ public class Linea {
         return false;
     }
 
-    public boolean checkDiagonals() {
-        // Verificar diagonales ascendentes
-        for (int row = 4; row <= height; row++) {
-            for (int column = 1; column <= base - 3; column++) {
-                boolean consecutiveFound = true;
-                for (int i = 0; i < 4; i++) {
-                    if (pieceAt(row - i, column + i ) != gameStatus.colorPiece()) {
-                        consecutiveFound = false;
-                        break;
-                    }
-                }
-                if (consecutiveFound) {
-                    gameStatus = GameStatus.gameFinished();
-                    return true;
-                }
-            }
-        }
+    public boolean checkColumnsAndRows() {
+        return check4ConsecutivePieces(1, 1, 0, 1)
+                || check4ConsecutivePieces(1, 1, 1, 0);
+    }
 
-        // Verificar diagonales descendentes
-        for (int row = 1; row <= height - 3; row++) {
-            for (int column = 1; column <= base - 3; column++) {
-                boolean consecutiveFound = true;
-                for (int i = 0; i < 4; i++) {
-                    if (pieceAt( row+i, column+i) != gameStatus.colorPiece()) {
-                        consecutiveFound = false;
-                        break;
-                    }
-                }
-                if (consecutiveFound) {
-                    gameStatus = GameStatus.gameFinished();
-                    return true;
-                }
-            }
-        }
-        return false;
+    public boolean checkDiagonals() {
+        return check4ConsecutivePieces(4, 1, -1, 1)
+                || check4ConsecutivePieces(1, 1, 1, 1);
     }
 
     public boolean checkAllDirections() {
         return checkColumnsAndRows() || checkDiagonals();
-    }
-
-    public void refreshDraw() {
-        draw = !win() && columns.stream().allMatch( column -> column.size() == height );
-        if (draw) {
-            gameStatus = GameStatus.gameFinished();
-        }
-    }
-
-    public boolean redWins() {
-        return redWon;
-    }
-
-    public boolean blueWins() {
-        return blueWon;
-    }
-
-    public boolean win() {
-        return blueWins() || redWins();
-    }
-
-    public boolean draw() {
-        return draw;
-    }
-    public boolean finished() {
-        return draw()||win();
     }
 
     public char pieceAt(int rowNumber, int columnNumber ) {
@@ -184,8 +123,12 @@ public class Linea {
         return result;
     }
 
-    public void setGameStatus( GameStatus gameStatus ) {
-        this.gameStatus = gameStatus;
-    }
+    public void setGameStatus( GameStatus gameStatus ) { this.gameStatus = gameStatus; }
+
+    public boolean redWins() { return redWon; }
+    public boolean blueWins() { return blueWon; }
+    public boolean win() { return blueWins() || redWins(); }
+    public boolean draw() { return draw; }
+    public boolean finished() { return draw() || win(); }
 
 }

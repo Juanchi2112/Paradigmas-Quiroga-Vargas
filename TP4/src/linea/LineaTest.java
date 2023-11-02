@@ -264,6 +264,10 @@ public class LineaTest {
 
     }
 
+    //Test en el que se gana en la ultima jugada antes del empate, debe tomarlo como victoria y no como empate.
+//    @Test public void testWinOneMoveBeforeADraw() {
+//    }
+
     private void assertThrowsLike( Executable executable, String message ) {
         assertEquals( assertThrows( RuntimeException.class, executable).getMessage(), message );
     }

@@ -1,22 +1,25 @@
 package linea;
 
 public abstract class GameStatus {
-
-    public static GameStatus playingRed() {
-        return new PlayingRed();
+    
+    protected Linea game;
+    
+    public GameStatus( Linea game ) {
+        this.game = game;
+    }
+    
+    public static GameStatus GameOver(Linea game ) {
+        return new GameOver( game );
     }
 
-    public static GameStatus playingBlue() {
-        return new PlayingBlue();
-    }
 
-    public static GameStatus gameFinished() {
-        return new GameFinished();
-    }
+    public abstract void playWithRed( int column );
+    public abstract void playWithBlue( int column );
+    public abstract void next();
 
-    public abstract void playWithRed( Linea game, int column );
-    public abstract void playWithBlue( Linea game, int column );
-    public abstract GameStatus next();
+    public void finishGame() {
+        game.setGameStatus( GameOver( game ) );
+    }
 
     public char colorPiece() {
         return ' ';

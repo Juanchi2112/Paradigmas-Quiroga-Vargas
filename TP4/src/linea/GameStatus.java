@@ -12,7 +12,6 @@ public abstract class GameStatus {
         return new GameOver( game );
     }
 
-
     public abstract void playWithRed( int column );
     public abstract void playWithBlue( int column );
     public abstract void next();

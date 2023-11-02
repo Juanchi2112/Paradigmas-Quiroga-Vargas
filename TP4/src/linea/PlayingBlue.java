@@ -13,7 +13,7 @@ public class PlayingBlue extends GameStatus {
     }
 
     public void playWithBlue( int column ) {
-        game.addPieceTo( column - 1 );
+        game.addPieceTo( column );
     }
 
     public void next() {

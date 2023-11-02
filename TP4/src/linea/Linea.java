@@ -7,9 +7,11 @@ public class Linea {
 
     public static String FullColumnMessage = "Columna llena";
 
+    private List<List<Character>> columns = new ArrayList<>();
     private int base;
     private int height;
-    private List<List<Character>> columns = new ArrayList<>();
+    private int lastMoveRow;
+    private int lastMoveColumn;
 
     private GameMode gameMode;
     private GameStatus gameStatus = new PlayingRed( this );
@@ -21,13 +23,13 @@ public class Linea {
     public Linea( int base, int height, char gameModeKey ) {
         this.base = base;
         this.height = height;
+        gameMode = GameMode.find( gameModeKey );
         if (base < 1 || height < 1) {
             throw new RuntimeException( "Dimensiones inválidas" );
         }
         for (int i = 0; i < base; i++) {
             columns.add( new ArrayList<>() );
         }
-        gameMode = GameMode.find( gameModeKey );
     }
 
     public Linea playRedAt( int column ) {
@@ -55,53 +57,50 @@ public class Linea {
             gameStatus.finishGame();
         }
     }
-    
-    public void addPieceTo( int columnIndex ) {
-        if (columnIndex < 0 || columnIndex >= base) {
+
+    public void addPieceTo( int columnNumber ) {
+        if (columnNumber < 1 || columnNumber > base) {
             throw new RuntimeException( "Columna fuera de rango" );
         }
-        List<Character> column = columns.get( columnIndex );
+        List<Character> column = columns.get( columnNumber - 1 );
         if (column.size() < height) {
             column.add( gameStatus.colorPiece() );
+            lastMoveColumn = columnNumber;
+            lastMoveRow = height - column.size() + 1;
         } else {
             throw new RuntimeException( FullColumnMessage );
         }
     }
 
-    private boolean check4ConsecutivePieces(int startRow, int startColumn, int rowDiff, int columnDiff) {
-        for (int row = startRow; row <= height - rowDiff; row++) {
-            for (int column = startColumn; column <= base - columnDiff; column++) {
-                boolean consecutiveFound = true;
-                for (int i = 0; i < 4; i++) {
-                    if (pieceAt(row + i * rowDiff, column + i * columnDiff) != gameStatus.colorPiece()) {
-                        consecutiveFound = false;
-                        break;
-                    }
-                }
-                if (consecutiveFound) {
+    private boolean check4ConsecutiveAroundLastMove( int rowChange, int colChange ) {
+        int consecutiveCount = 0;
+        for (int diff = -3; diff <= 3; diff++) {
+            if (pieceAt(lastMoveRow + diff * rowChange, lastMoveColumn + diff * colChange) == gameStatus.colorPiece()) {
+                consecutiveCount++;
+                if (consecutiveCount == 4) {
                     gameStatus.finishGame();
                     return true;
                 }
+            } else {
+                consecutiveCount = 0;
             }
         }
         return false;
     }
 
     public boolean checkColumnsAndRows() {
-        return check4ConsecutivePieces(1, 1, 0, 1)
-                || check4ConsecutivePieces(1, 1, 1, 0);
+        return check4ConsecutiveAroundLastMove( 1, 0) || check4ConsecutiveAroundLastMove( 0, 1 );
     }
 
     public boolean checkDiagonals() {
-        return check4ConsecutivePieces(4, 1, -1, 1)
-                || check4ConsecutivePieces(1, 1, 1, 1);
+        return check4ConsecutiveAroundLastMove(1, 1)  || check4ConsecutiveAroundLastMove( 1, -1);
     }
 
     public boolean checkAllDirections() {
         return checkColumnsAndRows() || checkDiagonals();
     }
 
-    public char pieceAt(int rowNumber, int columnNumber ) {
+    public char pieceAt( int rowNumber, int columnNumber ) {
         try {
             return columns.get( columnNumber - 1 ).get( height - rowNumber );
         } catch (IndexOutOfBoundsException e) {

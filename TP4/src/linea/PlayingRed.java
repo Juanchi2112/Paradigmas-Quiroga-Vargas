@@ -9,7 +9,7 @@ public class PlayingRed extends GameStatus {
     }
 
     public void playWithRed( int column ) {
-        game.addPieceTo(column - 1);
+        game.addPieceTo(column);
     }
 
     public void playWithBlue( int column ) {

@@ -1,11 +1,13 @@
 package linea;
 
-public class GameOver extends GameStatus {
+public class NoOnePlaying extends GameStatus {
 
     public static String ErrorMessage = "El juego ya terminó";
 
-    public GameOver(Linea game) {
-        super(game);
+
+    public NoOnePlaying(Linea game, String message ) {
+        super(game, message);
+        teamName = "";
     }
 
     public void playWithRed( int column ) {

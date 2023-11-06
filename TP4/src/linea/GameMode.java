@@ -1,12 +1,12 @@
 package linea;
 
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.Consumer;
 
 public class GameMode {
 
     private char key;
-    private Function<Linea, Boolean> checkWin;
+    private Consumer<Linea> checkWin;
 
     public static List<GameMode>  gameModes = List.of(
             new GameMode('A', Linea::checkColumnsAndRows),
@@ -14,7 +14,7 @@ public class GameMode {
             new GameMode('C', Linea::checkAllDirections)
             );
 
-    public GameMode( char key, Function<Linea,Boolean> checkWin ) {
+    public GameMode( char key, Consumer<Linea> checkWin ) {
         this.key = key;
         this.checkWin = checkWin;
     }
@@ -30,8 +30,8 @@ public class GameMode {
             .get();
     }
 
-    public boolean checkWin( Linea game ) {
-        return checkWin.apply( game );
+    public void checkWin( Linea game ) {
+        checkWin.accept( game );
     }
 
 }

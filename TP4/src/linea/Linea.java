@@ -10,15 +10,12 @@ public class Linea {
     private List<List<Character>> columns = new ArrayList<>();
     private int base;
     private int height;
+
     private int lastMoveRow;
     private int lastMoveColumn;
 
     private GameMode gameMode;
-    private GameStatus gameStatus = new PlayingRed( this );
-
-    private boolean redWon = false;
-    private boolean blueWon = false;
-    private boolean draw = false;
+    private GameStatus gameStatus = GameStatus.defaultPlayingRed( this );
 
     public Linea( int base, int height, char gameModeKey ) {
         this.base = base;
@@ -34,27 +31,25 @@ public class Linea {
 
     public Linea playRedAt( int column ) {
         gameStatus.playWithRed( column );
-        redWon = processPlayerLastMove();
+        processPlayerLastMove();
         return this;
     }
 
     public Linea playBlueAt( int column ) {
         gameStatus.playWithBlue( column );
-        blueWon = processPlayerLastMove();
+        processPlayerLastMove();
         return this;
     }
 
-    private boolean processPlayerLastMove() {
-        boolean playerWon = gameMode.checkWin( this );
+    private void processPlayerLastMove() {
+        gameMode.checkWin( this );
         checkDraw();
         gameStatus.next();
-        return playerWon;
     }
 
     private void checkDraw() {
-        draw = !win() && columns.stream().allMatch( column -> column.size() == height );
-        if (draw) {
-            gameStatus.finishGame();
+        if ( !win() && columns.stream().allMatch( column -> column.size() == height ) ) {
+            gameStatus.finishGame( "Empate" );
         }
     }
 
@@ -64,7 +59,7 @@ public class Linea {
         }
         List<Character> column = columns.get( columnNumber - 1 );
         if (column.size() < height) {
-            column.add( gameStatus.colorPiece() );
+            column.add( gameStatus.associatedPiece() );
             lastMoveColumn = columnNumber;
             lastMoveRow = height - column.size() + 1;
         } else {
@@ -72,32 +67,33 @@ public class Linea {
         }
     }
 
-    private boolean check4ConsecutiveAroundLastMove( int rowChange, int colChange ) {
+    private void check4ConsecutiveAroundLastMove( int rowChange, int colChange ) {
         int consecutiveCount = 0;
         for (int diff = -3; diff <= 3; diff++) {
-            if (pieceAt(lastMoveRow + diff * rowChange, lastMoveColumn + diff * colChange) == gameStatus.colorPiece()) {
+            if (pieceAt(lastMoveRow + diff * rowChange, lastMoveColumn + diff * colChange) == gameStatus.associatedPiece()) {
                 consecutiveCount++;
                 if (consecutiveCount == 4) {
-                    gameStatus.finishGame();
-                    return true;
+                    gameStatus.finishGame("Ganaron las " + gameStatus.teamName());
                 }
             } else {
                 consecutiveCount = 0;
             }
         }
-        return false;
     }
 
-    public boolean checkColumnsAndRows() {
-        return check4ConsecutiveAroundLastMove( 1, 0) || check4ConsecutiveAroundLastMove( 0, 1 );
+    public void checkColumnsAndRows() {
+        check4ConsecutiveAroundLastMove( 1, 0);
+        check4ConsecutiveAroundLastMove( 0, 1 );
     }
 
-    public boolean checkDiagonals() {
-        return check4ConsecutiveAroundLastMove(1, 1)  || check4ConsecutiveAroundLastMove( 1, -1);
+    public void checkDiagonals() {
+        check4ConsecutiveAroundLastMove(1, 1);
+        check4ConsecutiveAroundLastMove( 1, -1);
     }
 
-    public boolean checkAllDirections() {
-        return checkColumnsAndRows() || checkDiagonals();
+    public void checkAllDirections() {
+        checkColumnsAndRows();
+        checkDiagonals();
     }
 
     public char pieceAt( int rowNumber, int columnNumber ) {
@@ -109,13 +105,11 @@ public class Linea {
     }
 
     public String show() {
-        String result = "";
+        String result = gameStatus.associatedMessage() + "\n";
         for (int row = 1; row <= height; row++) {
-            result += "|";
-            result += " ";
+            result += "| ";
             for (int column = 1; column <= base; column++) {
-                result += pieceAt( row, column );
-                result += " ";
+                result += pieceAt( row, column ) + " ";
             }
             result += "|\n";
         }
@@ -124,10 +118,10 @@ public class Linea {
 
     public void setGameStatus( GameStatus gameStatus ) { this.gameStatus = gameStatus; }
 
-    public boolean redWins() { return redWon; }
-    public boolean blueWins() { return blueWon; }
+    public boolean redWins() { return gameStatus.associatedMessage().equals( "Ganaron las Rojas" ); }
+    public boolean blueWins() { return gameStatus.associatedMessage().equals( "Ganaron las Azules" ); }
     public boolean win() { return blueWins() || redWins(); }
-    public boolean draw() { return draw; }
-    public boolean finished() { return draw() || win(); }
+    public boolean draw() { return gameStatus.associatedMessage().equals( "Empate" );  }
+    public boolean finished() { return gameStatus instanceof NoOnePlaying;}
 
 }

@@ -4,9 +4,9 @@ public class PlayingRed extends GameStatus {
 
     public static String ErrorMessage = "No es el turno de las azules";
 
-    public PlayingRed(Linea game, String message) {
-        super(game, message);
-        teamName = "Rojas";
+    public PlayingRed(Linea game) {
+        super(game);
+        associatedMessage = "Juegan las Rojas";
     }
 
     public void playWithRed( int column ) {
@@ -18,11 +18,15 @@ public class PlayingRed extends GameStatus {
     }
 
     public void next() {
-        game.setGameStatus( defaultPlayingBlue( game ) );
+        game.setGameStatus( new PlayingBlue( game ) );
     }
 
     public char associatedPiece() {
         return 'R';
+    }
+
+    public void finishWithWin() {
+        game.setGameStatus( new RedWon( game ) );
     }
 
 }

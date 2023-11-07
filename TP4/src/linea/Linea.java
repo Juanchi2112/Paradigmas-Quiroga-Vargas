@@ -15,7 +15,7 @@ public class Linea {
     private int lastMoveColumn;
 
     private GameMode gameMode;
-    private GameStatus gameStatus = GameStatus.defaultPlayingRed( this );
+    private GameStatus gameStatus = new PlayingRed( this );
 
     public Linea( int base, int height, char gameModeKey ) {
         this.base = base;
@@ -49,7 +49,7 @@ public class Linea {
 
     private void checkDraw() {
         if ( !win() && columns.stream().allMatch( column -> column.size() == height ) ) {
-            gameStatus.finishGame( "Empate" );
+            gameStatus.finishWithDraw();
         }
     }
 
@@ -73,7 +73,7 @@ public class Linea {
             if (pieceAt(lastMoveRow + diff * rowChange, lastMoveColumn + diff * colChange) == gameStatus.associatedPiece()) {
                 consecutiveCount++;
                 if (consecutiveCount == 4) {
-                    gameStatus.finishGame("Ganaron las " + gameStatus.teamName());
+                    gameStatus.finishWithWin();
                 }
             } else {
                 consecutiveCount = 0;
@@ -118,10 +118,10 @@ public class Linea {
 
     public void setGameStatus( GameStatus gameStatus ) { this.gameStatus = gameStatus; }
 
-    public boolean redWins() { return gameStatus.associatedMessage().equals( "Ganaron las Rojas" ); }
-    public boolean blueWins() { return gameStatus.associatedMessage().equals( "Ganaron las Azules" ); }
+    public boolean redWins() { return gameStatus instanceof RedWon; }
+    public boolean blueWins() { return gameStatus instanceof BlueWon; }
     public boolean win() { return blueWins() || redWins(); }
-    public boolean draw() { return gameStatus.associatedMessage().equals( "Empate" );  }
-    public boolean finished() { return gameStatus instanceof NoOnePlaying;}
+    public boolean draw() { return gameStatus instanceof Draw; }
+    public boolean finished() { return gameStatus instanceof NoOnePlaying; }
 
 }

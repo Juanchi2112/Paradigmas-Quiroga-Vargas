@@ -41,18 +41,6 @@ public class Linea {
         return this;
     }
 
-    private void processPlayerLastMove() {
-        gameMode.checkWin( this );
-        checkDraw();
-        gameStatus.next();
-    }
-
-    private void checkDraw() {
-        if ( !win() && columns.stream().allMatch( column -> column.size() == height ) ) {
-            gameStatus.finishWithDraw();
-        }
-    }
-
     public void addPieceTo( int columnNumber ) {
         if (columnNumber < 1 || columnNumber > base) {
             throw new RuntimeException( "Columna fuera de rango" );
@@ -67,17 +55,15 @@ public class Linea {
         }
     }
 
-    private void check4ConsecutiveAroundLastMove( int rowChange, int colChange ) {
-        int consecutiveCount = 0;
-        for (int diff = -3; diff <= 3; diff++) {
-            if (pieceAt(lastMoveRow + diff * rowChange, lastMoveColumn + diff * colChange) == gameStatus.associatedPiece()) {
-                consecutiveCount++;
-                if (consecutiveCount == 4) {
-                    gameStatus.finishWithWin();
-                }
-            } else {
-                consecutiveCount = 0;
-            }
+    private void processPlayerLastMove() {
+        gameMode.checkWin( this );
+        checkDraw();
+        gameStatus.nextTurn();
+    }
+
+    private void checkDraw() {
+        if ( !win() && columns.stream().allMatch( column -> column.size() == height ) ) {
+            gameStatus.finishWithDraw();
         }
     }
 
@@ -86,14 +72,28 @@ public class Linea {
         check4ConsecutiveAroundLastMove( 0, 1 );
     }
 
+    public void checkAllDirections() {
+        checkColumnsAndRows();
+        checkDiagonals();
+    }
+
     public void checkDiagonals() {
         check4ConsecutiveAroundLastMove(1, 1);
         check4ConsecutiveAroundLastMove( 1, -1);
     }
 
-    public void checkAllDirections() {
-        checkColumnsAndRows();
-        checkDiagonals();
+    private void check4ConsecutiveAroundLastMove( int rowChange, int colChange ) {
+        int consecutiveCount = 0;
+        for (int diff = -3; diff <= 3; diff++) {
+            if ( pieceAt(lastMoveRow + diff * rowChange, lastMoveColumn + diff * colChange) == gameStatus.associatedPiece() ) {
+                consecutiveCount++;
+                if (consecutiveCount == 4) {
+                    gameStatus.finishWithWin();
+                }
+            } else {
+                consecutiveCount = 0;
+            }
+        }
     }
 
     public char pieceAt( int rowNumber, int columnNumber ) {

@@ -7,6 +7,7 @@ public class PlayingRed extends GameStatus {
     public PlayingRed(Linea game) {
         super(game);
         associatedMessage = "Juegan las Rojas";
+        associatedPiece = 'R';
     }
 
     public void playWithRed( int column ) {
@@ -17,12 +18,8 @@ public class PlayingRed extends GameStatus {
         throw new RuntimeException( ErrorMessage );
     }
 
-    public void next() {
+    public void nextTurn() {
         game.setGameStatus( new PlayingBlue( game ) );
-    }
-
-    public char associatedPiece() {
-        return 'R';
     }
 
     public void finishWithWin() {

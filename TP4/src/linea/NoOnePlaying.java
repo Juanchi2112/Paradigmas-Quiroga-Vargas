@@ -6,6 +6,7 @@ public class NoOnePlaying extends GameStatus {
 
     public NoOnePlaying(Linea game) {
         super(game);
+        associatedPiece = ' ';
     }
 
     public void playWithRed( int column ) {
@@ -17,6 +18,6 @@ public class NoOnePlaying extends GameStatus {
     }
 
     public void finishWithWin() {}
-    public void next() {}
+    public void nextTurn() {}
 
 }

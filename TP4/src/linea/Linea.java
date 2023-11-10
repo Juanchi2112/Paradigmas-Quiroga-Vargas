@@ -5,6 +5,8 @@ import java.util.List;
 
 public class Linea {
 
+    public static final String DIMENSIONES_INVÁLIDAS = "Dimensiones inválidas";
+    public static final String COLUMNA_FUERA_DE_RANGO = "Columna fuera de rango";
     public static String FullColumnMessage = "Columna llena";
 
     private List<List<Character>> columns = new ArrayList<>();
@@ -22,7 +24,7 @@ public class Linea {
         this.height = height;
         gameMode = GameMode.find( gameModeKey );
         if (base < 1 || height < 1) {
-            throw new RuntimeException( "Dimensiones inválidas" );
+            throw new RuntimeException(DIMENSIONES_INVÁLIDAS);
         }
         for (int i = 0; i < base; i++) {
             columns.add( new ArrayList<>() );
@@ -43,7 +45,7 @@ public class Linea {
 
     public void addPieceTo( int columnNumber ) {
         if (columnNumber < 1 || columnNumber > base) {
-            throw new RuntimeException( "Columna fuera de rango" );
+            throw new RuntimeException(COLUMNA_FUERA_DE_RANGO);
         }
         List<Character> column = columns.get( columnNumber - 1 );
         if (column.size() < height) {

@@ -1,5 +1,6 @@
 package linea;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
@@ -10,13 +11,23 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class LineaTest {
 
+    protected Linea defaultGame;
+
+    @BeforeEach public void setUp() {
+        defaultGame = new Linea( 7, 6, 'A' );
+    }
+
     @Test public void testEmpty7x6Board() {
         Linea game = new Linea( 7, 6, 'A' );
         assertFalse( game.finished() );
     }
 
     @Test public void testInvalidDimensions() {
-        assertThrowsLike( () -> new Linea( 0, -2, 'A' ), "Dimensiones inválidas" );
+        assertThrowsLike( () -> new Linea( 0, -2, 'A' ), Linea.InvalidDimensionsMessage );
+    }
+
+    @Test public void testInvalidGameMode() {
+        assertThrowsLike( () -> new Linea( 7, 6, 'D' ), GameMode.InvalidGameMode );
     }
 
     @Test public void testRedPlaysFirst() {
@@ -27,23 +38,23 @@ public class LineaTest {
 
     @Test public void testColumnOutOfRange() {
         Linea game = new Linea( 7, 6, 'A' );
-        assertThrowsLike( () -> game.playRedAt(8), "Columna fuera de rango" );
+        assertThrowsLike( () -> game.playRedAt(8), Linea.ColumnOutOfRangeMessage );
     }
 
     @Test public void testColumnOutOfRange2() {
         Linea game = new Linea( 7, 6, 'A' );
-        assertThrowsLike( () -> game.playRedAt(0), "Columna fuera de rango" );
+        assertThrowsLike( () -> game.playRedAt(0), Linea.ColumnOutOfRangeMessage );
     }
 
     @Test public void testRedPlaysTwice() {
         Linea game = new Linea( 7, 6, 'A' );
         game.playRedAt(1);
-        assertThrowsLike( () -> game.playRedAt(1), "No es el turno de las rojas" );
+        assertThrowsLike( () -> game.playRedAt(1), GameStatus.NotRedTurnMessage);
     }
 
     @Test public void testBluePlaysFirst() {
         Linea game = new Linea( 7, 6, 'A' );
-        assertThrowsLike( () -> game.playBlueAt(1), "No es el turno de las azules" );
+        assertThrowsLike( () -> game.playBlueAt(1), GameStatus.NotBlueTurnMessage);
     }
 
     @Test public void testBluePlaysSecond() {
@@ -57,7 +68,7 @@ public class LineaTest {
         Linea game = new Linea( 7, 6, 'A' );
         game.playRedAt(1);
         game.playBlueAt( 1 );
-        assertThrowsLike( () -> game.playBlueAt(1), "No es el turno de las azules" );
+        assertThrowsLike( () -> game.playBlueAt(1), GameStatus.NotBlueTurnMessage);
     }
 
     @Test public void testTurnsAlternateCorrectly() {
@@ -81,10 +92,10 @@ public class LineaTest {
         game.playBlueAt(2 );
 
         game.playRedAt(2 );
-        assertThrowsLike( () -> game.playRedAt(2), "No es el turno de las rojas" );
+        assertThrowsLike( () -> game.playRedAt(2), GameStatus.NotRedTurnMessage);
 
         game.playBlueAt(2);
-        assertThrowsLike( () -> game.playBlueAt(2), "No es el turno de las azules" );
+        assertThrowsLike( () -> game.playBlueAt(2), GameStatus.NotBlueTurnMessage);
     }
 
     @Test public void testFullColumn() {
@@ -95,7 +106,7 @@ public class LineaTest {
         game.playBlueAt(1);
         game.playRedAt(1);
         game.playBlueAt(1);
-        assertThrowsLike( () -> game.playRedAt(1), "Columna llena" );
+        assertThrowsLike( () -> game.playRedAt(1), Linea.FullColumnMessage );
     }
 
     @Test public void testRedWinsWith4InARow() {
@@ -244,7 +255,7 @@ public class LineaTest {
 
         assertTrue( game.win() );
         assertTrue( game.finished() );
-        assertThrowsLike( () -> game.playRedAt(1), "El juego ya terminó" );
+        assertThrowsLike( () -> game.playRedAt(1), GameStatus.FinishedGameMessage );
     }
 
     @Test public void testGameIsFinishedAfterADrawAndItIsNotPosibleToContinuePlaying() {
@@ -263,7 +274,7 @@ public class LineaTest {
 
         assertTrue( game.draw() );
         assertTrue( game.finished() );
-        assertThrowsLike( () -> game.playRedAt(1), "El juego ya terminó" );
+        assertThrowsLike( () -> game.playRedAt(1), GameStatus.FinishedGameMessage );
 
     }
 

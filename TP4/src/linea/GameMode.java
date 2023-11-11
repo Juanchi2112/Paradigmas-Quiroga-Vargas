@@ -5,6 +5,7 @@ import java.util.function.Consumer;
 
 public class GameMode {
 
+    public static final String InvalidGameMode = "Modo de juego inválido";
     private char key;
     private Consumer<Linea> checkWin;
 
@@ -27,7 +28,7 @@ public class GameMode {
         return gameModes.stream()
             .filter( gameMode -> gameMode.isRepresentedBy(key) )
             .findFirst()
-            .get();
+            .orElseThrow( () -> new RuntimeException( InvalidGameMode ) );
     }
 
     public void checkWin( Linea game ) {

@@ -2,19 +2,17 @@ package linea;
 
 public class NoOnePlaying extends GameStatus {
 
-    public static String ErrorMessage = "El juego ya terminó";
-
     public NoOnePlaying(Linea game) {
         super(game);
         associatedPiece = ' ';
     }
 
     public void playWithRed( int column ) {
-        throw new RuntimeException( ErrorMessage );
+        throw new RuntimeException( FinishedGameMessage );
     }
 
     public void playWithBlue( int column ) {
-        throw new RuntimeException( ErrorMessage );
+        throw new RuntimeException( FinishedGameMessage );
     }
 
     public void finishWithWin() {}

@@ -1,6 +1,10 @@
 package linea;
 
 public abstract class GameStatus {
+
+    public static String NotRedTurnMessage = "No es el turno de las rojas";
+    public static String NotBlueTurnMessage = "No es el turno de las azules";
+    public static String FinishedGameMessage = "El juego ya terminó";
     
     protected Linea game;
     protected String associatedMessage;

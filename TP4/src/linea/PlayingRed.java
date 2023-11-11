@@ -2,8 +2,6 @@ package linea;
 
 public class PlayingRed extends GameStatus {
 
-    public static String ErrorMessage = "No es el turno de las azules";
-
     public PlayingRed(Linea game) {
         super(game);
         associatedMessage = "Juegan las Rojas";
@@ -15,7 +13,7 @@ public class PlayingRed extends GameStatus {
     }
 
     public void playWithBlue( int column ) {
-        throw new RuntimeException( ErrorMessage );
+        throw new RuntimeException(NotBlueTurnMessage);
     }
 
     public void nextTurn() {

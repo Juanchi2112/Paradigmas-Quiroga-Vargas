@@ -16,7 +16,7 @@ public class PlayingRed extends GameStatus {
         throw new RuntimeException(NotBlueTurnMessage);
     }
 
-    public void nextTurn() {
+    public void setNextTurn() {
         game.setGameStatus( new PlayingBlue( game ) );
     }
 

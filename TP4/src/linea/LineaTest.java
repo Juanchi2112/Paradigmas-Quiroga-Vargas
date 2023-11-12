@@ -11,10 +11,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class LineaTest {
 
-    protected Linea defaultGame;
+    protected Linea defaultGameA;
 
     @BeforeEach public void setUp() {
-        defaultGame = new Linea( 7, 6, 'A' );
+        defaultGameA = new Linea( 7, 6, 'A' );
     }
 
     @Test public void testEmpty7x6Board() {
@@ -31,115 +31,102 @@ public class LineaTest {
     }
 
     @Test public void testRedPlaysFirst() {
-        defaultGame.playRedAt(1);
-        assertEquals( 'R', defaultGame.pieceAt(6,1) );
+        assertEquals( 'R', defaultGameA.playRedAt(1).pieceAt(6,1) );
     }
 
     @Test public void testColumnOutOfRange() {
-        assertThrowsLike( () -> defaultGame.playRedAt(8), Linea.ColumnOutOfRangeMessage );
+        assertThrowsLike( () -> defaultGameA.playRedAt(8), Linea.ColumnOutOfRangeMessage );
     }
 
     @Test public void testColumnOutOfRange2() {
-        assertThrowsLike( () -> defaultGame.playRedAt(0), Linea.ColumnOutOfRangeMessage );
+        assertThrowsLike( () -> defaultGameA.playRedAt(0), Linea.ColumnOutOfRangeMessage );
     }
 
     @Test public void testRedPlaysTwice() {
-        defaultGame.playRedAt(1);
-        assertThrowsLike( () -> defaultGame.playRedAt(1), GameStatus.NotRedTurnMessage);
+        assertThrowsLike( () -> defaultGameA.playRedAt(1).playRedAt( 1 ), GameStatus.NotRedTurnMessage);
     }
 
     @Test public void testBluePlaysFirst() {
-        assertThrowsLike( () -> defaultGame.playBlueAt(1), GameStatus.NotBlueTurnMessage);
+        assertThrowsLike( () -> defaultGameA.playBlueAt(1), GameStatus.NotBlueTurnMessage);
     }
 
     @Test public void testBluePlaysSecond() {
-        defaultGame.playRedAt(1);
-        defaultGame.playBlueAt( 1 );
-        assertEquals( 'B', defaultGame.pieceAt(5, 1 ) );
+        defaultGameA.playRedAt(1).playBlueAt( 1 );
+        assertEquals( 'B', defaultGameA.pieceAt(5, 1 ) );
     }
 
     @Test public void testBluePlaysTwice() {
-        defaultGame.playRedAt(1);
-        defaultGame.playBlueAt( 1 );
-        assertThrowsLike( () -> defaultGame.playBlueAt(1), GameStatus.NotBlueTurnMessage);
+        defaultGameA.playRedAt(1).playBlueAt( 1 );
+        assertThrowsLike( () -> defaultGameA.playBlueAt(1), GameStatus.NotBlueTurnMessage);
     }
 
     @Test public void testTurnsAlternateCorrectly() {
-        defaultGame.playRedAt(1);
-        defaultGame.playBlueAt(1);
-        defaultGame.playRedAt(1);
-        defaultGame.playBlueAt(2 );
-        defaultGame.playRedAt(2 );
-        defaultGame.playBlueAt(2);
+        playSequenceOfMoves( defaultGameA, 1, 1, 1, 2, 2, 2);
 
-        assertEquals( defaultGame.pieceAt(4, 1), 'R' );
-        assertEquals( defaultGame.pieceAt(4, 2), 'B' );
+        assertEquals( defaultGameA.pieceAt(4, 1), 'R' );
+        assertEquals( defaultGameA.pieceAt(4, 2), 'B' );
     }
 
     @Test public void testTurnsAlternateCorrectly2() {
-        defaultGame.playRedAt(1);
-        defaultGame.playBlueAt(1);
-        defaultGame.playRedAt(1);
-        defaultGame.playBlueAt(2 );
+        playSequenceOfMoves( defaultGameA, 1, 1, 1, 2, 2);
+        assertThrowsLike( () -> defaultGameA.playRedAt(2), GameStatus.NotRedTurnMessage);
 
-        defaultGame.playRedAt(2 );
-        assertThrowsLike( () -> defaultGame.playRedAt(2), GameStatus.NotRedTurnMessage);
-
-        defaultGame.playBlueAt(2);
-        assertThrowsLike( () -> defaultGame.playBlueAt(2), GameStatus.NotBlueTurnMessage);
+        defaultGameA.playBlueAt(2);
+        assertThrowsLike( () -> defaultGameA.playBlueAt(2), GameStatus.NotBlueTurnMessage);
     }
 
     @Test public void testFullColumn() {
-        playSequenceOfMoves( defaultGame,1, 1, 1, 1, 1, 1 );
-        assertThrowsLike( () -> defaultGame.playRedAt(1), Linea.FullColumnMessage );
+        playSequenceOfMoves(defaultGameA,1, 1, 1, 1, 1, 1 );
+        assertThrowsLike( () -> defaultGameA.playRedAt(1), Linea.FullColumnMessage );
     }
 
     @Test public void testRedWinsWith4InARow() {
-        movesToRowWinWithRed(defaultGame);
+        movesToRowWinWithRed(defaultGameA);
 
-        assertTrue( defaultGame.redWins() );
-        assertTrue( defaultGame.finished() );
+        assertTrue( defaultGameA.redWins() );
+        assertTrue( defaultGameA.finished() );
     }
 
     @Test public void testBlueWinsWith4InARow() {
-        playSequenceOfMoves( defaultGame, 5, 1, 1, 2, 2, 3, 3, 4) ;
+        playSequenceOfMoves(defaultGameA, 5, 1, 1, 2, 2, 3, 3, 4) ;
 
-        assertTrue( defaultGame.blueWins() );
-        assertTrue( defaultGame.finished() );
+        assertTrue( defaultGameA.blueWins() );
+        assertTrue( defaultGameA.finished() );
     }
 
     @Test public void testRedWinsWith4InAColumn() {
-        movesToVerticalWinWithRed(defaultGame);
+        movesToVerticalWinWithRed(defaultGameA);
 
-        assertTrue( defaultGame.redWins() );
-        assertTrue( defaultGame.finished() );
+        assertTrue( defaultGameA.redWins() );
+        assertTrue( defaultGameA.finished() );
     }
 
     @Test public void testBlueWinsWith4InAColumn() {
-        playSequenceOfMoves(defaultGame, 1, 2, 1, 2, 1, 2, 3, 2 );
+        playSequenceOfMoves(defaultGameA, 1, 2, 1, 2, 1, 2, 3, 2 );
 
-        assertTrue(defaultGame.blueWins());
-        assertTrue(defaultGame.finished());
+        assertTrue(defaultGameA.blueWins());
+        assertTrue(defaultGameA.finished());
     }
 
     @Test public void testPlayerDoesNotWinWith4InADiagonalInVariantA() {
-        movesToDiagonalWinWithRed(defaultGame);
-        assertEquals(defaultGame.pieceAt(3, 4), 'R');
-        assertFalse(defaultGame.win());
-        assertFalse(defaultGame.finished());
+        movesToDiagonalWinWithRed(defaultGameA);
+        assertEquals( defaultGameA.pieceAt(3, 4), 'R' );
+        assertFalse( defaultGameA.win());
+        assertFalse( defaultGameA.finished() );
 
     }
 
     @Test public void testRedWinsWith4InADiagonalInVariantB() {
-        Linea game = new Linea( 7, 6, 'B');
+        Linea game = defaultGameB();
         movesToDiagonalWinWithRed(game);
+
         assertEquals(game.pieceAt(3, 4), 'R');
         assertTrue(game.redWins());
         assertTrue(game.finished());
     }
 
     @Test public void testBlueWinsWith4InADiagonalInVariantB() {
-        Linea game = new Linea( 7, 6, 'B');
+        Linea game = defaultGameB();
         playSequenceOfMoves( game, 6, 1, 2, 2, 3, 4, 3, 3, 4, 5, 4, 4);
 
         assertEquals(game.pieceAt(3, 4), 'B');
@@ -148,9 +135,8 @@ public class LineaTest {
     }
 
     @Test public void testPlayerDoesNotWinWith4InAColumnOrRowInVariantB() {
-        Linea game = new Linea(7, 6, 'B');
+        Linea game = defaultGameB();
         playSequenceOfMoves( game, 1, 2, 1, 2, 1, 4, 1);
-
         assertFalse(game.redWins());
 
         game.playBlueAt(5);
@@ -159,19 +145,15 @@ public class LineaTest {
     }
 
     @Test public void testPlayerWinsWith4InARowInVariantC() {
-        Linea game = new Linea( 7, 6, 'C');
+        Linea game = defaultGameC();
         movesToRowWinWithRed(game);
 
         assertTrue( game.redWins() );
         assertTrue( game.finished() );
     }
 
-    private void movesToRowWinWithRed(Linea game) {
-        playSequenceOfMoves(game, 1, 1, 2, 2, 3, 3, 4 );
-    }
-
     @Test public void testPlayerWinsWith4InAColumnInVariantC() {
-        Linea game = new Linea( 7, 6, 'C');
+        Linea game = defaultGameC();
         movesToVerticalWinWithRed(game);
 
         assertTrue( game.redWins() );
@@ -179,7 +161,7 @@ public class LineaTest {
     }
 
     @Test public void testPlayerWinsWith4InADiagonalInVariantC() {
-        Linea game = new Linea( 7, 6, 'C');
+        Linea game = defaultGameC();
         movesToDiagonalWinWithRed(game);
 
         assertTrue( game.redWins() );
@@ -187,16 +169,14 @@ public class LineaTest {
     }
 
     @Test public void testGameIsFinishedAfterAWinAndItIsNotPossibleToContinuePlaying() {
-        Linea game = new Linea( 7, 6, 'A');
-        playSequenceOfMoves( game, 1, 1, 2, 2, 3, 3, 4 );
+        playSequenceOfMoves( defaultGameA, 1, 1, 2, 2, 3, 3, 4 );
 
-
-        assertTrue( game.win() );
-        assertTrue( game.finished() );
-        assertThrowsLike( () -> game.playRedAt(1), GameStatus.FinishedGameMessage );
+        assertTrue( defaultGameA.win() );
+        assertTrue( defaultGameA.finished() );
+        assertThrowsLike( () -> defaultGameA.playRedAt(1), GameStatus.FinishedGameMessage );
     }
 
-    @Test public void testGameIsFinishedAfterADrawAndItIsNotPosibleToContinuePlaying() {
+    @Test public void testGameIsFinishedAfterADrawAndItIsNotPossibleToContinuePlaying() {
         Linea game = new Linea( 5, 4, 'A');
         playSequenceOfMoves( game, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5 );
 
@@ -215,6 +195,36 @@ public class LineaTest {
         assertTrue( game.finished() );
     }
 
+    @Test public void testEmptyBoardShow(){
+        assertEquals(defaultGameA.show(), "Juegan las Rojas\n" +
+                "| - - - - - - - |\n" +
+                "| - - - - - - - |\n" +
+                "| - - - - - - - |\n" +
+                "| - - - - - - - |\n" +
+                "| - - - - - - - |\n" +
+                "| - - - - - - - |\n");
+    }
+    @Test public void testFinishedGameShow(){
+        movesToRowWinWithRed(defaultGameA);
+        assertEquals(defaultGameA.show(), "Ganaron las Rojas\n" +
+                "| - - - - - - - |\n" +
+                "| - - - - - - - |\n" +
+                "| - - - - - - - |\n" +
+                "| - - - - - - - |\n" +
+                "| B B B - - - - |\n" +
+                "| R R R R - - - |\n");
+
+    }
+    @Test public void testCompleteBoardShow(){
+        Linea game = new Linea( 5, 4, 'A');
+        playSequenceOfMoves( game, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5 );
+        assertEquals(game.show(), "Empate\n" +
+                "| B R B R B |\n" +
+                "| R B R B R |\n" +
+                "| B R B R B |\n" +
+                "| R B R B R |\n");
+}
+
     private void playSequenceOfMoves( Linea game, int ... moves ) {
         for (int i = 0; i < moves.length; i+= 2 )  {
             game.playRedAt( moves[i] );
@@ -228,8 +238,20 @@ public class LineaTest {
         playSequenceOfMoves( game, 1, 2, 1, 2, 1, 2, 1 );
     }
 
+    private void movesToRowWinWithRed(Linea game) {
+        playSequenceOfMoves(game, 1, 1, 2, 2, 3, 3, 4 );
+    }
+
     private void movesToDiagonalWinWithRed(Linea game) {
         playSequenceOfMoves( game, 1, 2, 2, 3, 4, 3, 3, 4, 5, 4, 4 );
+    }
+
+    private Linea defaultGameB() {
+        return new Linea( 7, 6, 'B');
+    }
+
+    private Linea defaultGameC() {
+        return new Linea(7, 6, 'C');
     }
 
     private void assertThrowsLike( Executable executable, String message ) {

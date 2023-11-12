@@ -16,6 +16,6 @@ public class NoOnePlaying extends GameStatus {
     }
 
     public void finishWithWin() {}
-    public void nextTurn() {}
+    public void setNextTurn() {}
 
 }

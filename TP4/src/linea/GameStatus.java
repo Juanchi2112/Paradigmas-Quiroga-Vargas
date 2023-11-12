@@ -16,7 +16,7 @@ public abstract class GameStatus {
 
     public abstract void playWithRed( int column );
     public abstract void playWithBlue( int column );
-    public abstract void nextTurn();
+    public abstract void setNextTurn();
 
     public abstract void finishWithWin();
     public void finishWithDraw() { game.setGameStatus( new Draw( game ) ); }

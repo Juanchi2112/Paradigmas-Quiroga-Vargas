@@ -23,10 +23,10 @@ public class Linea {
         this.base = base;
         this.height = height;
         gameMode = GameMode.find( gameModeKey );
-        if (base < 1 || height < 1) {
-            throw new RuntimeException(InvalidDimensionsMessage);
+        if ( base < 1 || height < 1 ) {
+            throw new RuntimeException( InvalidDimensionsMessage );
         }
-        for (int i = 0; i < base; i++) {
+        for ( int i = 0; i < base; i++ ) {
             columns.add( new ArrayList<>() );
         }
     }
@@ -60,7 +60,7 @@ public class Linea {
     private void processPlayerLastMove() {
         gameMode.checkWin( this );
         checkDraw();
-        gameStatus.nextTurn();
+        gameStatus.setNextTurn();
     }
 
     private void checkDraw() {
@@ -74,19 +74,19 @@ public class Linea {
         check4ConsecutiveAroundLastMove( 0, 1 );
     }
 
-    public void checkAllDirections() {
-        checkColumnsAndRows();
-        checkDiagonals();
-    }
-
     public void checkDiagonals() {
         check4ConsecutiveAroundLastMove(1, 1);
         check4ConsecutiveAroundLastMove( 1, -1);
     }
 
+    public void checkAllDirections() {
+        checkColumnsAndRows();
+        checkDiagonals();
+    }
+
     private void check4ConsecutiveAroundLastMove( int rowChange, int colChange ) {
         int consecutiveCount = 0;
-        for (int diff = -3; diff <= 3; diff++) {
+        for ( int diff = -3; diff <= 3; diff++ ) {
             if ( pieceAt(lastMoveRow + diff * rowChange, lastMoveColumn + diff * colChange) == gameStatus.associatedPiece() ) {
                 consecutiveCount++;
                 if (consecutiveCount == 4) {

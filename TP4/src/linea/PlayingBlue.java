@@ -16,7 +16,7 @@ public class PlayingBlue extends GameStatus {
         game.addPieceTo( column );
     }
 
-    public void nextTurn() {
+    public void setNextTurn() {
         game.setGameStatus( new PlayingRed( game ) );
     }
 
